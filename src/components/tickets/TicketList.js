@@ -1,10 +1,12 @@
 import "./tickets.css"
 import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
 
 export const TicketList = () => {
     const [tickets, setTickets] = useState([])
     const [filteredTickets, setFiltered] = useState([])
     const [emergency, setEmergency] = useState(false)
+    const navigate = useNavigate()
 
     const localHoneyUser = localStorage.getItem("honey_user")
     const honeyUserObject = JSON.parse(localHoneyUser)
@@ -14,6 +16,9 @@ export const TicketList = () => {
             if (emergency) {
                 const emergencyTickets = tickets.filter(ticket => ticket.emergency === true);
                 setFiltered(emergencyTickets);
+            }
+            else {
+                setFiltered(tickets);
             }
         },
         [emergency]
@@ -45,7 +50,13 @@ export const TicketList = () => {
     )
 
     return <>
-        {honeyUserObject.staff ? <button onClick={() => { setEmergency(true) }}>Emergency Only</button> : ""}
+        {honeyUserObject.staff
+            ? <>
+                <button onClick={() => { setEmergency(true) }}>Emergency Only</button>
+                <button onClick={() => { setEmergency(false) }}>Show All</button>
+            </>
+            : <button onClick={() => navigate("/ticket/create")}>Create Ticket</button>
+        }
         <h2>List of Tickets</h2>
         <article className="tickets">
             {
